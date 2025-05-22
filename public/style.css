@@ -551,7 +551,190 @@ small {
 }
 
 #langSwitcher:focus {
-    border-color: #80bdff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Configuration Button next to lang switcher */
+#configButton.header-button {
+    margin-left: 10px;
+    padding: 8px 12px; /* Adjust padding to match select if needed */
+    background-color: #6c757d; /* A neutral secondary button color */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem; /* Slightly smaller to fit header area */
+    transition: background-color 0.2s ease-in-out;
+}
+
+#configButton.header-button:hover {
+    background-color: #5a6268;
+}
+
+/* Configuration Modal specific styles */
+/* Aligning #configModal with #customModal behavior */
+#configModal {
+    /* Inherits .modal class for display, position, z-index, bg overlay, padding-top */
+}
+
+#configModal .modal-content.large {
+    /* background-color: #fefefe; - inherited from .modal-content */
+    margin: 5% auto; /* Consistent with #customModal */
+    padding: 25px; /* Slightly more padding for forms */
+    border: 1px solid #ddd; /* Softer border */
+    width: 90%; /* More responsive width */
+    max-width: 650px; /* Adjusted max-width */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: left; /* Forms are better left-aligned */
+    position: relative; /* For close button positioning */
+}
+
+/* Config Modal Title (h3) - Align with #modalTitle */
+#configModal .modal-content.large h3 {
+    margin-top: 0;
+    margin-bottom: 20px; /* More space before form */
+    color: #333;
+    font-size: 1.8em; /* Consistent with general modal titles */
+    text-align: center; /* Center the title of the config modal */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+/* Config Modal Close Button - Align with .modal-close-button */
+#configModalCloseButton {
+    color: #aaa;
+    position: absolute; /* Position relative to modal-content */
+    top: 15px; /* Adjust for padding */
+    right: 20px; /* Adjust for padding */
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1; /* Ensure proper vertical alignment */
+}
+
+#configModalCloseButton:hover,
+#configModalCloseButton:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+#configForm .form-group {
+    margin-bottom: 18px; /* Slightly more space */
+}
+
+#configForm label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600; /* Slightly bolder */
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+#configForm input[type="text"],
+#configForm input[type="number"],
+#configForm input[type="password"],
+#configForm select {
+    width: calc(100% - 24px); /* Match other inputs, account for padding */
+    padding: 10px 12px;
+    border: 1px solid #ced4da; /* Standard border */
+    border-radius: 6px; /* Consistent with other inputs */
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#configForm input:focus,
+#configForm select:focus {
+    border-color: #2563eb; /* Highlight color from main button */
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25); /* Match main button focus */
+}
+
+#configForm small {
+    display: block; /* Already set, ensure consistency */
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-top: 4px; /* Closer to input */
+}
+
+#configModalMessage {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    padding: 12px 15px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.95rem;
+    /* font-weight: bold; - Removed, let color convey severity */
+    border: 1px solid transparent; /* Base for borders */
+}
+
+#configModalMessage.info {
+    background-color: #e7f3fe; /* Lighter blue */
+    color: #0c5460; /* Darker blue text */
+    border-color: #b8daff; /* Blue border */
+}
+
+#configModalMessage.success {
+    background-color: #d1e7dd; /* Lighter green */
+    color: #0f5132; /* Darker green text */
+    border-color: #badbcc; /* Green border */
+}
+
+#configModalMessage.error {
+    background-color: #f8d7da; /* Red remains good */
+    color: #721c24;  /* Red text remains good */
+    border-color: #f5c2c7; /* Red border */
+}
+
+.modal-actions {
+    display: flex; /* Use flex for better alignment */
+    justify-content: flex-end; /* Align buttons to the right */
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef; /* Light separator line */
+}
+
+.modal-actions button {
+    margin-left: 10px;
+    padding: 10px 20px; /* Consistent padding */
+    font-size: 0.95rem;
+    border-radius: 6px; /* Consistent radius */
+}
+
+/* Save button specifically - style like a primary action button */
+.modal-actions button#saveConfigButton {
+    background-color: #2563eb; /* Primary button color (blue) */
+    color: white;
+}
+.modal-actions button#saveConfigButton:hover {
+    background-color: #1d4ed8; /* Darker blue on hover */
+}
+
+/* Optional: Style for test button if implemented - style like a secondary action */
+/*
+.modal-actions button#testConfigButton {
+    background-color: #6c757d; // Secondary button color
+    color: white;
+}
+.modal-actions button#testConfigButton:hover {
+    background-color: #5a6268;
+}
+*/
+
+/* Styles for the XLSX example image container and image */
+.xlsx-example-image-container {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    text-align: center; /* Center the image */
+}
+
+.xlsx-example-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd; /* Light border around the image */
+    border-radius: 4px; /* Slightly rounded corners */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle shadow */
 } 

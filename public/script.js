@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Section 1: Upload
         uploadSectionTitle: document.querySelector('#configSection h2'),
         uploadInstructions: document.querySelector('#configSection p'),
+        xlsxImageAltText: document.querySelector('.xlsx-example-image'), // For the new image alt text
         selectXlsFileLabel: document.querySelector('label[for="xlsFile"]'), // More specific
         previewButton: document.getElementById('previewButton'),
         previewAreaTitle: document.querySelector('#previewArea h3'),
@@ -143,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (element && i18nData[key]) {
                 if (key === 'pageTitle') {
                     element.textContent = i18nData[key];
+                } else if (key === 'xlsxImageAltText' && element.tagName === 'IMG') {
+                    element.alt = i18nData[key];
                 } else if (element.tagName === 'INPUT' && element.type === 'button' || element.tagName === 'BUTTON') {
                     element.textContent = i18nData[key];
                 } else if (element.tagName === 'INPUT' && element.placeholder !== undefined) {
@@ -188,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndApplyLanguage(currentLang).then(() => {
         resetAllStepsToPending(); // Set initial state after language loaded
         navigateToStep(0, true); // Show first step/section, force activation
+        checkConfigStatusOnLoad(); // << CHECK CONFIG STATUS AFTER LANGUAGE AND UI ARE READY
     });
 
     const xlsFileElement = document.getElementById('xlsFile');
@@ -209,6 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTitleElement = document.getElementById('modalTitle');
     const modalMessageElement = document.getElementById('modalMessage');
     const modalOkButton = document.getElementById('modalOkButton'); // Already in DOMElements
+
+    // Configuration Modal Elements
+    const configButton = document.getElementById('configButton');
+    const configModal = document.getElementById('configModal');
+    const configModalCloseButton = document.getElementById('configModalCloseButton');
+    const configForm = document.getElementById('configForm');
+    const configModalMessageElement = document.getElementById('configModalMessage');
 
     let uploadedFileName = null;
     let originalXlsNameFromServer = null;
@@ -249,6 +260,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('click', (event) => {
         if (event.target == customModal) {
             closeModal();
+        }
+        if (event.target == configModal) { // Close config modal if clicked outside
+            closeConfigModal();
         }
     });
 
@@ -704,6 +718,124 @@ document.addEventListener('DOMContentLoaded', () => {
             // sendButton.click(); // DO NOT trigger send here
             navigateToStep(2); // Just navigate to the send section
         });
+    }
+
+    // --- Configuration Modal Logic ---
+    async function openConfigModal() {
+        configModalMessageElement.textContent = i18nData.configModalLoading || 'Loading configuration...';
+        configModalMessageElement.className = 'modal-message-area info'; // Add class for styling
+        configModal.style.display = 'block';
+        try {
+            const response = await fetch('/api/config');
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || `HTTP error ${response.status}`);
+            }
+            const currentConfig = await response.json();
+            // Populate form fields
+            configForm.EMAIL_HOST.value = currentConfig.EMAIL_HOST || '';
+            configForm.EMAIL_PORT.value = currentConfig.EMAIL_PORT || 587;
+            configForm.EMAIL_SECURE.value = String(currentConfig.EMAIL_SECURE || 'false');
+            configForm.EMAIL_USER.value = currentConfig.EMAIL_USER || '';
+            // EMAIL_PASS is not pre-filled for security
+            configForm.EMAIL_FROM_NAME.value = currentConfig.EMAIL_FROM_NAME || 'EmailGo App';
+            configForm.EMAIL_FROM_EMAIL.value = currentConfig.EMAIL_FROM_EMAIL || '';
+            configModalMessageElement.textContent = ''; // Clear loading message
+        } catch (error) {
+            console.error('Failed to load config:', error);
+            configModalMessageElement.textContent = (i18nData.configModalLoadError || 'Failed to load configuration: {errorMessage}').replace('{errorMessage}', error.message);
+            configModalMessageElement.className = 'modal-message-area error';
+        }
+    }
+
+    function closeConfigModal() {
+        if (configModal) configModal.style.display = 'none';
+        if (configModalMessageElement) configModalMessageElement.textContent = ''; // Clear any messages
+    }
+
+    if (configButton) {
+        configButton.addEventListener('click', openConfigModal);
+    }
+    if (configModalCloseButton) {
+        configModalCloseButton.addEventListener('click', closeConfigModal);
+    }
+
+    if (configForm) {
+        configForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            configModalMessageElement.textContent = i18nData.configModalSaving || 'Saving configuration...';
+            configModalMessageElement.className = 'modal-message-area info';
+
+            const formData = new FormData(configForm);
+            const configData = {};
+            let isValid = true;
+            const requiredFields = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_FROM_EMAIL'];
+
+            for (const [key, value] of formData.entries()) {
+                configData[key] = value;
+                if (requiredFields.includes(key) && !value.trim()) {
+                    isValid = false;
+                    const fieldLabel = document.querySelector(`label[for="${configForm[key].id}"]`).textContent.replace(':','');
+                    configModalMessageElement.textContent = (i18nData.configModalValidationRequired || 'Field \'{fieldName}\' is required.').replace('{fieldName}', fieldLabel);
+                    configModalMessageElement.className = 'modal-message-area error';
+                    break;
+                }
+            }
+
+            if (!isValid) return;
+
+            if (configData.EMAIL_USER !== configData.EMAIL_FROM_EMAIL) {
+                configModalMessageElement.textContent = i18nData.configModalValidationEmailMatch || 'Sender Email must match SMTP Username.';
+                configModalMessageElement.className = 'modal-message-area error';
+                return;
+            }
+            
+            // Convert EMAIL_PORT to number and EMAIL_SECURE to boolean before sending
+            configData.EMAIL_PORT = parseInt(configData.EMAIL_PORT, 10);
+            configData.EMAIL_SECURE = configData.EMAIL_SECURE === 'true';
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(configData),
+                });
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.message || `HTTP error ${response.status}`);
+                }
+                configModalMessageElement.textContent = i18nData.configModalSuccessMsg || 'Configuration saved successfully!';
+                configModalMessageElement.className = 'modal-message-area success';
+                setTimeout(closeConfigModal, 1500); // Close modal after a short delay
+            } catch (error) {
+                console.error('Failed to save config:', error);
+                configModalMessageElement.textContent = (i18nData.configModalErrorMsg || 'Failed to save configuration: {errorMessage}').replace('{errorMessage}', error.message);
+                configModalMessageElement.className = 'modal-message-area error';
+            }
+        });
+    }
+
+    async function checkConfigStatusOnLoad() {
+        try {
+            const response = await fetch('/api/config/status');
+            if (!response.ok) {
+                console.warn('Could not fetch config status. Assuming not configured.');
+                openConfigModal(); // Open config if status check fails
+                return;
+            }
+            const status = await response.json();
+            if (!status.isConfigured) {
+                console.warn('SMTP is not configured. Opening configuration modal.');
+                openConfigModal();
+                // Show a more persistent message if needed, e.g., using the main modal
+                // showModal('configModalTitle', 'configModalNotConfigured'); // <--- 註釋掉這一行
+            }
+        } catch (error) {
+            console.error('Error checking config status:', error);
+            openConfigModal(); // Open config if there's an error fetching status
+        }
     }
 
 }); 
