@@ -1,0 +1,27 @@
+# Dependency directories
+node_modules/
+
+# Environment variables file
+.env
+
+# Uploaded files and temporary attachments
+uploads/
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating system generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw? 

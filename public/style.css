@@ -1,0 +1,557 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5; /* Slightly lighter and more modern background */
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%; /* Changed from 1200px to be more responsive */
+    max-width: 1200px; /* Retain a max-width */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    position: relative; /* Added for positioning lang switcher */
+}
+
+h1, h2, h3 {
+    color: #1f2937; /* Darker, less harsh than pure black */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2em; /* Slightly larger */
+}
+
+h2 {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 10px;
+    margin-top: 0; /* Reset margin for h2 inside sections */
+    margin-bottom: 20px; /* Space below h2 */
+    font-size: 1.5em;
+}
+
+section {
+    margin-bottom: 35px; /* Increased space between sections */
+    padding: 25px; /* Padding inside sections if they become cards */
+    border: 1px solid #e5e7eb; /* Border for card-like appearance */
+    border-radius: 8px; /* Rounded corners for cards */
+    background-color: #fff; /* Ensure sections have a white background if container changes */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Subtle shadow for sections */
+    display: none; /* Hide sections by default */
+}
+
+section.active-section {
+    display: block; /* Show active section */
+}
+
+section:last-child {
+    border-bottom: 1px solid #e5e7eb; /* Keep border for consistency if all sections are cards */
+}
+
+/* Remove the main container's bottom border from individual sections */
+.container > section {
+    /* border-bottom: none; /* This might be redundant if sections have their own borders */
+}
+
+input[type="file"],
+input[type="text"],
+input[type="number"], /* Added number type for sendInterval */
+textarea,
+.ql-toolbar, /* Quill toolbar */
+.ql-container /* Quill editor container */ {
+    width: calc(100% - 22px); /* Keep consistent width */
+    padding: 10px;
+    margin-bottom: 15px; /* Increased margin */
+    border: 1px solid #d1d5db; /* Softer border color */
+    border-radius: 6px; /* Softer radius */
+    box-sizing: border-box;
+    font-size: 1rem; /* Consistent font size */
+    background-color: #fff; /* Ensure background is white */
+}
+
+input[type="file"] {
+    padding: 8px; /* Adjust padding for file input */
+}
+
+/* Focus style for inputs and textarea */
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+.ql-container.ql-snow.ql-focused /* Quill focus */ {
+    border-color: #2563eb; /* Highlight color on focus */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Focus ring */
+    outline: none;
+}
+
+/* Quill specific styles to ensure toolbar and container match */
+.ql-toolbar.ql-snow {
+    border-bottom: 1px solid #d1d5db; /* Match bottom border with editor */
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+.ql-container.ql-snow {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    min-height: 180px; /* Ensure a good default height */
+}
+
+textarea {
+    min-height: 120px; /* Adjusted min-height */
+    resize: vertical;
+}
+
+button {
+    background-color: #2563eb; /* Primary button color (blue) */
+    color: white;
+    border: none;
+    padding: 12px 20px; /* Increased padding */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem; /* Consistent font size */
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transitions */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+button:hover {
+    background-color: #1d4ed8; /* Darker shade on hover */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Focus ring consistent with inputs */
+}
+
+button:disabled {
+    background-color: #9ca3af; /* Softer disabled color */
+    color: #e5e7eb;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Specific button styling for preview (secondary) vs send (primary) */
+#previewButton {
+    background-color: #4b5563; /* A darker gray for secondary actions */
+}
+#previewButton:hover {
+    background-color: #374151;
+}
+
+small {
+    display: block;
+    margin-top: -8px; /* Adjust to be closer to input */
+    margin-bottom: 12px;
+    color: #6b7280; /* Softer text color */
+}
+
+.preview-area, #progressArea, #resultsSection {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+#fileInfo, #placeholders {
+    margin-bottom: 10px;
+}
+
+#placeholders span {
+    display: inline-block;
+    background-color: #e7e7e7;
+    padding: 3px 8px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+#xlsPreviewTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#xlsPreviewTable th, #xlsPreviewTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#xlsPreviewTable th {
+    background-color: #f0f0f0;
+}
+
+#progressBarContainer {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+#progressBar {
+    width: 0%;
+    height: 20px;
+    background-color: #4caf50;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+}
+
+#errorLog {
+    margin-top: 15px;
+}
+#errorLog h4 {
+    margin-bottom: 5px;
+}
+#errorList {
+    list-style-type: none;
+    padding-left: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+#errorList li {
+    padding: 3px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+    color: #c00;
+}
+#errorList li:last-child {
+    border-bottom: none;
+}
+
+#downloadLink {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+#downloadLink:hover {
+    background-color: #0056b3;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-top: 60px; /* Location of the box */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* 5% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 500px; /* Maximum width */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    text-align: center;
+}
+
+.modal-close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal-close-button:hover,
+.modal-close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#modalTitle {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+#modalMessage {
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+}
+
+#modalOkButton {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 80px;
+}
+
+#modalOkButton:hover {
+    background-color: #4cae4c;
+}
+
+/* Attachment List Styles */
+.attachment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.attachment-item span {
+    flex-grow: 1;
+    margin-right: 10px;
+    word-break: break-all; /* Prevents long filenames from breaking layout */
+}
+
+.remove-attachment-btn {
+    padding: 3px 8px;
+    font-size: 0.8em;
+    color: white;
+    background-color: #d9534f; /* Red color for removal */
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.remove-attachment-btn:hover {
+    background-color: #c9302c;
+}
+
+#attachmentList {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 150px; /* Optional: if you expect many attachments */
+    overflow-y: auto;   /* Optional: for scrolling */
+}
+
+#attachmentList:empty { /* Hide border/padding if no attachments */
+    border: none;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Steps Container Styles */
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items to the start for description text */
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb; /* Separator line */
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start; /* Align icon and content to the top */
+    text-align: left; /* Text align for content */
+    flex: 1; /* Distribute space, but content will determine width */
+    position: relative; /* For connector positioning */
+    padding: 0 10px; /* Padding around each step item */
+    cursor: pointer; /* Add hand cursor on hover */
+}
+
+.step-icon-container {
+    display: flex;
+    flex-direction: column; /* Stack number and icon */
+    align-items: center;
+    margin-right: 10px;
+}
+
+.step-number {
+    background-color: #d1d5db; /* Default background for number */
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 8px; /* Space between number and icon/line */
+}
+
+.step-icon {
+    width: 20px;
+    height: 20px;
+    /* background-image: url('your-pending-icon.svg'); /* Placeholder */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Icons will be handled by classes primarily */
+}
+
+/* Step Content */
+.step-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.step-title {
+    font-weight: bold;
+    font-size: 1em;
+    color: #374151; /* Darker grey for title */
+    margin-bottom: 4px;
+}
+
+.step-description {
+    font-size: 0.85em;
+    color: #6b7280; /* Lighter grey for description */
+    line-height: 1.3;
+}
+
+/* Step Connectors */
+.step-connector {
+    flex-grow: 1;
+    height: 2px;
+    background-color: #d1d5db; /* Default connector color */
+    margin: 0 5px; /* Margin from step items */
+    position: relative;
+    top: 12px; /* Align with the middle of the step number */
+    min-width: 30px; /* Minimum width for connectors */
+}
+
+/* --- States for Steps --- */
+
+/* Pending State (Default, also .step-icon-pending if explicit class needed) */
+/* .step-item.pending .step-number { background-color: #d1d5db; } */
+/* .step-item.pending .step-icon { background-image: url('pending-icon.svg'); } */
+
+/* Active/In Progress State */
+.step-item.active .step-number {
+    background-color: #2563eb; /* Blue for active */
+}
+.step-item.active .step-icon::before {
+    content: ''; /* For CSS-based icons or can be replaced by SVG */
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-color: #2563eb;
+    border-radius: 50%; /* Pulsing dot for active, for example */
+    animation: pulse 1.5s infinite ease-in-out;
+}
+.step-item.active .step-title {
+    color: #2563eb;
+}
+.step-item.active + .step-connector {
+    background-color: #2563eb; /* Connector after an active step is also active */
+}
+
+/* Completed State */
+.step-item.completed .step-number {
+    background-color: #16a34a; /* Green for completed */
+}
+.step-item.completed .step-icon::before {
+    content: '\2713'; /* Checkmark character */
+    color: #16a34a;
+    font-size: 18px;
+    line-height: 18px;
+    font-weight: bold;
+}
+.step-item.completed .step-title {
+    color: #16a34a;
+}
+.step-item.completed + .step-connector {
+    background-color: #16a34a; /* Connector after a completed step */
+}
+
+/* Animation for active step */
+@keyframes pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+}
+
+/* Navigation Buttons Styling */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between; /* Distributes space for prev/next */
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb; /* Separator line above buttons */
+}
+
+.navigation-buttons button {
+    min-width: 120px; /* Give buttons a decent minimum width */
+}
+
+/* If only one button (e.g., only Next), make it align to the right */
+.navigation-buttons button:only-child {
+    margin-left: auto;
+}
+
+/* Language Switcher Styles */
+#langSwitcherContainer {
+    position: absolute;
+    top: 20px; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa; /* Light background for the container */
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#langSwitcherContainer label {
+    margin-right: 8px;
+    font-size: 0.9em;
+    color: #495057;
+}
+
+#langSwitcher {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#langSwitcher:hover {
+    border-color: #80bdff;
+}
+
+#langSwitcher:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+} 

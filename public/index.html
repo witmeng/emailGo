@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XLS 郵件發送工具</title>
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="langSwitcherContainer">
+            <label for="langSwitcher" id="langSwitchLabel" data-i18n-key="langSwitchLabel">語言: </label>
+            <select id="langSwitcher">
+                <option value="zh-CN">简体中文</option>
+                <option value="zh-TW">繁體中文</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <h1 data-i18n-key="mainHeading">XLSX 郵件批量發送工具</h1>
+
+        <div class="steps-container">
+            <div class="step-item" id="stepUpload">
+                <div class="step-icon-container">
+                    <div class="step-number">1</div>
+                    <div class="step-icon step-icon-pending"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title" data-i18n-key="stepUploadTitle">上傳檔案</div>
+                    <div class="step-description" data-i18n-key="stepUploadDesc">選擇並預覽您的 XLS 檔案</div>
+                </div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item" id="stepTemplate">
+                <div class="step-icon-container">
+                    <div class="step-number">2</div>
+                    <div class="step-icon step-icon-pending"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title" data-i18n-key="stepTemplateTitle">編輯模板</div>
+                    <div class="step-description" data-i18n-key="stepTemplateDesc">設定郵件主題、內文和附件</div>
+                </div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item" id="stepSend">
+                <div class="step-icon-container">
+                    <div class="step-number">3</div>
+                    <div class="step-icon step-icon-pending"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title" data-i18n-key="stepSendTitle">發送郵件</div>
+                    <div class="step-description" data-i18n-key="stepSendDesc">執行郵件發送任務並查看進度</div>
+                </div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item" id="stepComplete">
+                <div class="step-icon-container">
+                    <div class="step-number">4</div>
+                    <div class="step-icon step-icon-pending"></div>
+                </div>
+                <div class="step-content">
+                    <div class="step-title" data-i18n-key="stepCompleteTitle">完成</div>
+                    <div class="step-description" data-i18n-key="stepCompleteDesc">下載更新後的 XLS 檔案</div>
+                </div>
+            </div>
+        </div>
+
+        <section id="configSection">
+            <h2 data-i18n-key="uploadSectionTitle">步驟 1: 上傳 XLSX 文件</h2>
+            <p data-i18n-key="uploadInstructions">.xlsx 文件要求：第一行為表頭。固定列：A=email, B=title, C=status (程序填寫), D=send_time (程序填寫)。其他列為自定義佔位符。</p>
+            <input type="file" id="xlsFile" accept=".xlsx">
+            <button id="previewButton" data-i18n-key="previewButton">預覽並載入佔位符</button>
+            <div id="previewArea" class="preview-area">
+                <h3>文件預覽和可用佔位符：</h3>
+                <div id="fileInfo"></div>
+                <div id="placeholders"></div>
+                <table id="xlsPreviewTable"></table>
+            </div>
+            <div class="navigation-buttons">
+                <button id="nextToTemplateBtn" data-i18n-key="btnNext">下一步</button>
+            </div>
+        </section>
+
+        <section id="antiSpamAdvice" style="display: block;">
+            <h2 data-i18n-key="antiSpamAdviceSectionTitle"></h2>
+            <ul>
+                <li id="antiSpamPoint1" data-i18n-key="antiSpamPoint1"></li>
+                <li id="antiSpamPoint2" data-i18n-key="antiSpamPoint2"></li>
+                <li id="antiSpamPoint3" data-i18n-key="antiSpamPoint3"></li>
+                <li id="antiSpamPoint4" data-i18n-key="antiSpamPoint4"></li>
+                <li id="antiSpamPoint5" data-i18n-key="antiSpamPoint5"></li>
+                <li id="antiSpamPoint6" data-i18n-key="antiSpamPoint6"></li>
+                <li id="antiSpamPoint7" data-i18n-key="antiSpamPoint7"></li>
+                <li id="antiSpamPoint8" data-i18n-key="antiSpamPoint8"></li>
+            </ul>
+        </section>
+
+        <section id="templateSection">
+            <h2>步驟 2: 編輯郵件模板</h2>
+            <div>
+                <label for="emailSubjectTemplate">郵件主題模板:</label>
+                <input type="text" id="emailSubjectTemplate" placeholder="例如：關於您的訂單 {{訂單號}}">
+                <small>可使用XLS第二列的表頭 `{{title}}` 或其他表頭作為佔位符。</small>
+            </div>
+            <div>
+                <label for="quillEditorContainer">郵件正文模板 (富文本):</label>
+                <div id="quillEditorContainer" style="min-height: 200px; border: 1px solid #ddd; margin-bottom: 10px;"></div>
+            </div>
+            <div>
+                <label for="emailAttachments">上傳附件 (可多選):</label>
+                <input type="file" id="emailAttachments" multiple>
+                <small>選中的附件將隨每封郵件一起發送。</small>
+                <div id="attachmentList" class="attachment-list"></div>
+            </div>
+            <div class="navigation-buttons">
+                <button id="prevToUploadBtn" data-i18n-key="btnPrevious">上一步</button>
+                <button id="nextToSendBtn" data-i18n-key="btnNext">下一步 (發送)</button>
+            </div>
+        </section>
+
+        <section id="sendSection">
+            <h2>步驟 3: 發送郵件</h2>
+            <div>
+                <label for="sendInterval">每封郵件發送間隔 (秒):</label>
+                <input type="number" id="sendInterval" value="5" min="0" step="1">
+                <small>設置每封郵件之間的延遲時間，有助於避免被標記為垃圾郵件。</small>
+            </div>
+            <button id="sendButton" disabled>開始發送</button>
+            <div id="progressArea">
+                <h3>發送進度:</h3>
+                <div id="progressBarContainer">
+                    <div id="progressBar"></div>
+                </div>
+                <p id="progressText"></p>
+                <div id="errorLog">
+                    <h4>錯誤日誌:</h4>
+                    <ul id="errorList"></ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="resultsSection">
+            <h2>發送結果</h2>
+            <p>處理完成後，您可以下載更新後的XLS文件（包含發送狀態和時間）。</p>
+            <a id="downloadLink" href="#" style="display:none;">下載更新後的XLS文件</a>
+        </section>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">&times;</span>
+            <h3 id="modalTitle">提示</h3>
+            <p id="modalMessage"></p>
+            <button id="modalOkButton">確定</button>
+        </div>
+    </div>
+
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
