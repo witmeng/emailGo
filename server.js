@@ -521,8 +521,8 @@ app.get('/send-emails-stream', async (req, res) => {
 
             try {
                 let shouldSkip = false;
-                if (statusColIndex !== -1 && job.receivedHeaders[statusColIndex]) {
-                    const currentStatusInFile = String(rowData[job.receivedHeaders[statusColIndex]] || '').trim().toLowerCase();
+                if (statusColIndex !== -1 && job.receivedHeaders[statusIndex]) {
+                    const currentStatusInFile = String(rowData[job.receivedHeaders[statusIndex]] || '').trim().toLowerCase();
                     if (currentStatusInFile === 'success') {
                         shouldSkip = true;
                         currentRowStatus = 'skipped_previously_success';
@@ -755,10 +755,12 @@ async function startApp() {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    const publicDir = path.join(projectBaseDir, 'public');
-    const uploadsDir = path.join(projectBaseDir, 'uploads');
+    // For packaged app (pkg), __dirname is the root. For dev, it's the current file's dir.
+    // This ensures that 'public' is correctly found whether running from source or packaged.
+    const publicDir = path.join(__dirname, 'public'); 
+    const uploadsDir = path.join(projectBaseDir, 'uploads'); // uploads are external to the package
 
-    app.use(express.static(publicDir));
+    app.use(express.static(publicDir)); 
     app.use('/uploads', express.static(uploadsDir));
 
     if (!fs.existsSync(uploadsDir)) {

@@ -27,4 +27,12 @@ Thumbs.db
 *.sw?
 
 # Executable files
-*.exe 
+*.exe
+*.rar
+*.zip
+*.7z
+*.tar
+*.gz
+*.bz2
+*.dmg
+*.pkg
